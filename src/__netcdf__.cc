@@ -26,6 +26,8 @@
 #include <vector>
 #include <inttypes.h>
 
+// Octave constructor to hold an array of ints
+#define NETCDF_INT_ARRAY int32NDArray
 std::map<std::string, octave_value> netcdf_constants;
 
 void init() {  
@@ -549,9 +551,15 @@ Return the id of all unlimited dimensions of the NetCDF file @var{ncid}.\n\
     }
 
   check_err(nc_inq_unlimdims(ncid, &nunlimdims, NULL));
-  Array<int> unlimdimids = Array<int>(dim_vector(1,nunlimdims));
-  check_err(nc_inq_unlimdims(ncid, &nunlimdims, unlimdimids.fortran_vec()));
-    
+
+  OCTAVE_LOCAL_BUFFER(int,tmp,nunlimdims);
+  NETCDF_INT_ARRAY unlimdimids = NETCDF_INT_ARRAY(dim_vector(1,nunlimdims));
+  check_err(nc_inq_unlimdims(ncid, &nunlimdims, tmp));
+
+  for (int i=0; i < nunlimdims; i++) {
+    unlimdimids(i) = tmp[i];
+  }
+
   return octave_value(unlimdimids);
 }
 
@@ -1837,8 +1845,13 @@ This functions returns all variable ids in a NetCDF file or NetCDF group.\n\
       return octave_value();      
     }
 
-  Array<int> varids = Array<int>(dim_vector(1,nvars));
-  check_err(nc_inq_varids(ncid, &nvars, varids.fortran_vec()));
+  OCTAVE_LOCAL_BUFFER(int,tmp,nvars);
+  NETCDF_INT_ARRAY varids = NETCDF_INT_ARRAY(dim_vector(1,nvars));
+  check_err(nc_inq_varids(ncid, &nvars, tmp));
+
+  for (int i=0; i < nvars; i++) {
+    varids(i) = tmp[i];
+  }
 
   return octave_value(varids);
 }
@@ -1994,8 +2007,14 @@ Per default this is not the case (@var{include_parents} is 0).\n\
 
   int ndims;
   check_err(nc_inq_ndims(ncid, &ndims));
-  Array<int> dimids = Array<int>(dim_vector(1,ndims));
-  check_err(nc_inq_dimids(ncid, &ndims, dimids.fortran_vec(),include_parents));
+
+  OCTAVE_LOCAL_BUFFER(int,tmp,ndims);
+  NETCDF_INT_ARRAY dimids = NETCDF_INT_ARRAY(dim_vector(1,ndims));
+  check_err(nc_inq_dimids(ncid, &ndims, tmp, include_parents));
+
+  for (int i=0; i < ndims; i++) {
+    dimids(i) = tmp[i];
+  }
     
   return octave_value(dimids);
 }
@@ -2065,8 +2084,13 @@ Return all groups ids in a NetCDF file.\n\
       return octave_value();      
     }
 
-  Array<int> ncids = Array<int>(dim_vector(1,numgrps));
-  check_err(nc_inq_grps(ncid, NULL, ncids.fortran_vec()));
+  OCTAVE_LOCAL_BUFFER(int,tmp,numgrps);
+  NETCDF_INT_ARRAY ncids = NETCDF_INT_ARRAY(dim_vector(1,numgrps));
+  check_err(nc_inq_grps(ncid, NULL, tmp));
+
+  for (int i=0; i < numgrps; i++) {
+    ncids(i) = tmp[i];
+  }
     
   return octave_value(ncids);
 }
