@@ -30,11 +30,11 @@
 #define NETCDF_INT_ARRAY int32NDArray
 std::map<std::string, octave_value> netcdf_constants;
 
-void init() {  
+void init() {
   #include "netcdf_constants.h"
 }
 
-void check_err(int status) 
+void check_err(int status)
 {
   if (status != NC_NOERR) error("%s",nc_strerror(status));
 }
@@ -45,11 +45,11 @@ std::string normalize_ncname(std::string name) {
   std::string ncname = name;
   // to upper case
   std::transform(ncname.begin(), ncname.end(),ncname.begin(), ::toupper);
-      
+
   // add prefix if it is missing
   if (ncname.substr(0, prefix.size()) != prefix) {
     ncname = prefix + ncname;
-  }  
+  }
   return ncname;
 }
 
@@ -88,21 +88,21 @@ size_t to_size_t(octave_value ov) {
 
 void to_size_t_vector(octave_value ov, int len, size_t *vec) {
   uint64NDArray tmp = ov.uint64_array_value();
-  
-  for (int i=0; i<len; i++) 
-	{      
+
+  for (int i=0; i<len; i++)
+	{
 	  vec[i] = static_cast<uint64_t>(tmp(len-i-1));
-	}    
+	}
 
 }
 
 void to_ptrdiff_t_vector(octave_value ov, int len, ptrdiff_t *vec) {
   int64NDArray tmp = ov.int64_array_value();
-  
-  for (int i=0; i<len; i++) 
-	{      
+
+  for (int i=0; i<len; i++)
+	{
 	  vec[i] = static_cast<int64_t>(tmp(len-i-1));
-	}    
+	}
 
 }
 
@@ -119,61 +119,61 @@ void start_count_stride(int ncid, int varid, octave_value_list args,int len,
     check_err(nc_inq_dimlen(ncid,dimids[i],&(count[i])));
     start[i] = 0;
     //cout << "count def " << count[i] << " " << i << endl;
-    stride[i] = 1;    
+    stride[i] = 1;
   }
 
   // start argument
 
-  if (len > 2) 
+  if (len > 2)
     {
-      if (args(2).numel() != ndims) 
+      if (args(2).numel() != ndims)
 	{
 	  error("number of elements of argument %s should match the number "
 		"of dimension of the netCDF variable",
 		"start");
-	}      
+	}
 
       to_size_t_vector(args(2),ndims,start);
 
       // if start is specified, the default for count is 1 (how odd!)
-      for (int i=0; i<ndims; i++) 
-	{      
+      for (int i=0; i<ndims; i++)
+	{
 	  count[i] = 1;
-	}    
+	}
     }
 
   // count argument
 
-  if (len > 3) 
+  if (len > 3)
     {
 
-      if (args(3).numel() != ndims) 
+      if (args(3).numel() != ndims)
 	{
 	  error("number of elements of argument %s should match the number "
 		"of dimension of the netCDF variable",
 		"count");
-	}      
+	}
 
       to_size_t_vector(args(3),ndims,count);
     }
 
   // stride argument
 
-  if (len > 4) 
+  if (len > 4)
     {
-      if (args(4).numel() != ndims) 
+      if (args(4).numel() != ndims)
 	{
 	  error("number of elements of argument %s should match the number "
 		"of dimension of the netCDF variable",
 		"stride");
-	}      
+	}
 
       to_ptrdiff_t_vector(args(4),ndims,stride);
     }
 }
 
 
-DEFUN_DLD(netcdf_getConstant, args,, 
+DEFUN_DLD(netcdf_getConstant, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{value} =} netcdf_getConstant(@var{name}) \n\
 Returns the value of a NetCDF constant called @var{name}.\n\
@@ -189,7 +189,7 @@ Returns the value of a NetCDF constant called @var{name}.\n\
 }
 
 
-DEFUN_DLD(netcdf_getConstantNames, args,, 
+DEFUN_DLD(netcdf_getConstantNames, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{value} =} netcdf_getConstantNames() \n\
 Returns a list of all constant names.\n\
@@ -197,7 +197,7 @@ Returns a list of all constant names.\n\
 @seealso{netcdf_getConstant}\n")
 {
 
-  if (args.length() != 0) 
+  if (args.length() != 0)
     {
       print_usage ();
       return octave_value();
@@ -211,24 +211,24 @@ Returns a list of all constant names.\n\
   Cell c = Cell (dim_vector(1,netcdf_constants.size()));
 
   int i = 0;
-  for (std::map<std::string, octave_value>::const_iterator p = netcdf_constants.begin (); 
+  for (std::map<std::string, octave_value>::const_iterator p = netcdf_constants.begin ();
        p != netcdf_constants.end (); p++) {
     c(i++) = octave_value(p->first);
-  }  
+  }
 
   return octave_value(c);
 
 }
 
 
-DEFUN_DLD(netcdf_inqLibVers, args,, 
+DEFUN_DLD(netcdf_inqLibVers, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{vers} =} netcdf_inqLibVers() \n\
 Returns the version of the NetCDF library.\n\
 @end deftypefn\n\
 @seealso{netcdf_open}\n")
 {
-  if (args.length() != 0) 
+  if (args.length() != 0)
     {
       print_usage ();
       return octave_value ();
@@ -237,7 +237,7 @@ Returns the version of the NetCDF library.\n\
   return octave_value(std::string(nc_inq_libvers()));
 }
 
-DEFUN_DLD(netcdf_setDefaultFormat, args,, 
+DEFUN_DLD(netcdf_setDefaultFormat, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{old_format} =} netcdf_setDefaultFormat(@var{format}) \n\
 Sets the default format of the NetCDF library and returns the previous default format (as a numeric value). @var{format} can be \n\
@@ -245,7 +245,7 @@ Sets the default format of the NetCDF library and returns the previous default f
 @end deftypefn\n\
 @seealso{netcdf_open}\n")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value ();
@@ -257,7 +257,7 @@ Sets the default format of the NetCDF library and returns the previous default f
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_set_default_format(format, &old_format));
@@ -268,19 +268,19 @@ Sets the default format of the NetCDF library and returns the previous default f
 
 //      int nc_set_chunk_cache(size_t size, size_t nelems, float preemption);
 
-DEFUN_DLD(netcdf_setChunkCache, args,, 
+DEFUN_DLD(netcdf_setChunkCache, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_setChunkCache(@var{size}, @var{nelems}, @var{preemption}) \n\
 Sets the default chunk cache settins in the HDF5 library. The settings applies to all files which are subsequently opened or created.\n\
 @end deftypefn\n\
 @seealso{netcdf_getChunkCache}\n")
 {
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
     }
-  
+
   size_t size = to_size_t(args(0));
   size_t nelems = to_size_t(args(1));
   float preemption = args(2).scalar_value();
@@ -288,7 +288,7 @@ Sets the default chunk cache settins in the HDF5 library. The settings applies t
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_set_chunk_cache(size, nelems, preemption));
@@ -299,19 +299,19 @@ Sets the default chunk cache settins in the HDF5 library. The settings applies t
 
 //      int nc_get_chunk_cache(size_t *sizep, size_t *nelemsp, float *preemptionp);
 
-DEFUN_DLD(netcdf_getChunkCache, args,, 
+DEFUN_DLD(netcdf_getChunkCache, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{size}, @var{nelems}, @var{preemption}] =} netcdf_getChunkCache() \n\
 Gets the default chunk cache settins in the HDF5 library. \n\
 @end deftypefn\n\
 @seealso{netcdf_setChunkCache}\n")
 {
-  if (args.length() != 0) 
+  if (args.length() != 0)
     {
       print_usage ();
       return octave_value ();
     }
-  
+
   size_t size;
   size_t nelems;
   float preemption;
@@ -319,7 +319,7 @@ Gets the default chunk cache settins in the HDF5 library. \n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_get_chunk_cache(&size, &nelems, &preemption));
@@ -333,7 +333,7 @@ Gets the default chunk cache settins in the HDF5 library. \n\
 
 
 
-DEFUN_DLD(netcdf_create, args,, 
+DEFUN_DLD(netcdf_create, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{ncid} =} netcdf_create(@var{filename},@var{mode}) \n\
 Creates the file named @var{filename} in the mode @var{mode} which can have the \n\
@@ -354,7 +354,7 @@ ncid = netcdf.create(\"test.nc\",mode); \n\
 @seealso{netcdf_close}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value ();
@@ -367,7 +367,7 @@ ncid = netcdf.create(\"test.nc\",mode); \n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_create(filename.c_str(), mode, &ncid));
@@ -375,7 +375,7 @@ ncid = netcdf.create(\"test.nc\",mode); \n\
   return octave_value(ncid);
 }
 
-DEFUN_DLD(netcdf_open, args,, 
+DEFUN_DLD(netcdf_open, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{ncid} =} netcdf_open(@var{filename},@var{mode}) \n\
 Opens the file named @var{filename} in the mode @var{mode}.\n\
@@ -383,7 +383,7 @@ Opens the file named @var{filename} in the mode @var{mode}.\n\
 @seealso{netcdf_close}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -396,7 +396,7 @@ Opens the file named @var{filename} in the mode @var{mode}.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_open(filename.c_str(), mode, &ncid));
@@ -406,7 +406,7 @@ Opens the file named @var{filename} in the mode @var{mode}.\n\
 
 
 
-DEFUN_DLD(netcdf_abort, args,, 
+DEFUN_DLD(netcdf_abort, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_abort(@var{ncid}) \n\
 Aborts all changes since the last time the dataset entered in define mode.\n\
@@ -414,7 +414,7 @@ Aborts all changes since the last time the dataset entered in define mode.\n\
 @seealso{netcdf_reDef}\n")
 {
 
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -422,10 +422,10 @@ Aborts all changes since the last time the dataset entered in define mode.\n\
 
   int ncid = args(0).scalar_value();
 
-  if (error_state) 
+  if (error_state)
     {
       print_usage ();
-      return octave_value();    
+      return octave_value();
     }
 
   check_err(nc_abort(ncid));
@@ -434,7 +434,7 @@ Aborts all changes since the last time the dataset entered in define mode.\n\
 }
 
 
-DEFUN_DLD(netcdf_sync, args,, 
+DEFUN_DLD(netcdf_sync, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_sync(@var{ncid}) \n\
 Writes all changes to the disk and leaves the file open.\n\
@@ -442,7 +442,7 @@ Writes all changes to the disk and leaves the file open.\n\
 @seealso{netcdf_close}\n")
 {
 
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -450,10 +450,10 @@ Writes all changes to the disk and leaves the file open.\n\
 
   int ncid = args(0).scalar_value();
 
-  if (error_state) 
+  if (error_state)
     {
       print_usage ();
-      return octave_value();    
+      return octave_value();
     }
 
   check_err(nc_sync(ncid));
@@ -461,7 +461,7 @@ Writes all changes to the disk and leaves the file open.\n\
   return octave_value();
 }
 
-DEFUN_DLD(netcdf_setFill, args,, 
+DEFUN_DLD(netcdf_setFill, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{old_mode} =} netcdf_setFill(@var{ncid},@var{fillmode}) \n\
 Change the fill mode (@var{fillmode}) of the data set @var{ncid}. The previous value of the fill mode is returned. @var{fillmode} can be either \"fill\" or \"nofill\".\n\
@@ -469,7 +469,7 @@ Change the fill mode (@var{fillmode}) of the data set @var{ncid}. The previous v
 @seealso{netcdf_open}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -479,10 +479,10 @@ Change the fill mode (@var{fillmode}) of the data set @var{ncid}. The previous v
   int fillmode = netcdf_get_constant(args(1)).int_value();
   int old_mode;
 
-  if (error_state) 
+  if (error_state)
     {
       print_usage ();
-      return octave_value();    
+      return octave_value();
     }
 
   check_err (nc_set_fill (ncid, fillmode, &old_mode));
@@ -493,7 +493,7 @@ Change the fill mode (@var{fillmode}) of the data set @var{ncid}. The previous v
 
 //int nc_inq          (int ncid, int *ndimsp, int *nvarsp, int *ngattsp,
 //                          int *unlimdimidp);
-DEFUN_DLD(netcdf_inq, args,, 
+DEFUN_DLD(netcdf_inq, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{ndims},@var{nvars},@var{ngatts},@var{unlimdimid}] =} netcdf_inq(@var{ncid}) \n\
 Return the number of dimension (@var{ndims}), the number of variables (@var{nvars}), the number of global attributes (@var{ngatts}) and the id of the unlimited dimension (@var{unlimdimid}). \n\
@@ -502,7 +502,7 @@ the function netcdf_inqUnlimDims as multiple unlimite dimension exists. \n\
 @end deftypefn\n\
 @seealso{netcdf_inqUnlimDims}\n")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -515,11 +515,11 @@ the function netcdf_inqUnlimDims as multiple unlimite dimension exists. \n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq(ncid,&ndims,&nvars,&ngatts,&unlimdimid));
-    
+
   retval(0) = octave_value(ndims);
   retval(1) = octave_value(nvars);
   retval(2) = octave_value(ngatts);
@@ -528,14 +528,14 @@ the function netcdf_inqUnlimDims as multiple unlimite dimension exists. \n\
 }
 
 // int nc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp);
-DEFUN_DLD(netcdf_inqUnlimDims, args,, 
+DEFUN_DLD(netcdf_inqUnlimDims, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{unlimdimids} =} netcdf_inqUnlimDims(@var{ncid}) \n\
 Return the id of all unlimited dimensions of the NetCDF file @var{ncid}.\n\
 @end deftypefn\n\
 @seealso{netcdf_inq}\n")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -547,7 +547,7 @@ Return the id of all unlimited dimensions of the NetCDF file @var{ncid}.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_unlimdims(ncid, &nunlimdims, NULL));
@@ -565,7 +565,7 @@ Return the id of all unlimited dimensions of the NetCDF file @var{ncid}.\n\
 
 
 // int nc_inq_format   (int ncid, int *formatp);
-DEFUN_DLD(netcdf_inqFormat, args,, 
+DEFUN_DLD(netcdf_inqFormat, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{format} =} netcdf_inqFormat(@var{ncid}) \n\
 Return the NetCDF format of the dataset @var{ncid}.\n\
@@ -575,7 +575,7 @@ Format might be one of the following \n\
 @seealso{netcdf_inq}\n")
 {
 
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -587,7 +587,7 @@ Format might be one of the following \n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_format(ncid, &format));
@@ -607,7 +607,7 @@ Format might be one of the following \n\
 
 // int nc_def_dim (int ncid, const char *name, size_t len, int *dimidp);
 
-DEFUN_DLD(netcdf_defDim, args,, 
+DEFUN_DLD(netcdf_defDim, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{dimid} =} netcdf_defDim(@var{ncid},@var{name},@var{len}) \n\
 Define the dimension with the name @var{name} and the length @var{len} in the dataset @var{ncid}. The id of the dimension is returned.\n\
@@ -615,7 +615,7 @@ Define the dimension with the name @var{name} and the length @var{len} in the da
 @seealso{netcdf_defVar}\n")
 {
 
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -629,7 +629,7 @@ Define the dimension with the name @var{name} and the length @var{len} in the da
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_def_dim (ncid, name.c_str(), len, &dimid));
@@ -641,7 +641,7 @@ Define the dimension with the name @var{name} and the length @var{len} in the da
 // int nc_rename_dim(int ncid, int dimid, const char* name);
 
 
-DEFUN_DLD(netcdf_renameDim, args,, 
+DEFUN_DLD(netcdf_renameDim, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_renameDim(@var{ncid},@var{dimid},@var{name}) \n\
 Renames the dimension with the id @var{dimid} in the data set @var{ncid}. @var{name} is the new name of the dimension.\n\
@@ -649,7 +649,7 @@ Renames the dimension with the id @var{dimid} in the data set @var{ncid}. @var{n
 @seealso{netcdf_defDim}\n")
 {
 
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -662,7 +662,7 @@ Renames the dimension with the id @var{dimid} in the data set @var{ncid}. @var{n
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_rename_dim (ncid, dimid, name.c_str()));
@@ -673,7 +673,7 @@ Renames the dimension with the id @var{dimid} in the data set @var{ncid}. @var{n
 //  int nc_def_var (int ncid, const char *name, nc_type xtype,
 //                     int ndims, const int dimids[], int *varidp);
 
-DEFUN_DLD(netcdf_defVar, args,, 
+DEFUN_DLD(netcdf_defVar, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{varid} = } netcdf_defVar(@var{ncid},@var{name},@var{xtype},@var{dimids}) \n\
 Defines a variable with the name @var{name} in the dataset @var{ncid}. @var{xtype} can be \"byte\", \"ubyte\", \"short\", \"ushort\", \"int\", \"uint\", \"int64\", \"uint64\", \"float\", \"double\", \"char\" or the corresponding number as returned by netcdf_getConstant. The parameter @var{dimids} define the ids of the dimension. For scalar this parameter is the empty array ([]). The variable id is returned. \n\
@@ -681,27 +681,27 @@ Defines a variable with the name @var{name} in the dataset @var{ncid}. @var{xtyp
 @seealso{netcdf_open,netcdf_defDim}\n")
 {
 
-  if (args.length() != 4) 
+  if (args.length() != 4)
     {
       print_usage ();
       return octave_value();
     }
 
   int ncid = args(0).scalar_value();
-  std::string name = args(1).string_value (); 
+  std::string name = args(1).string_value ();
   int xtype = netcdf_get_constant(args(2)).int_value();;
 
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   Array<double> tmp;
 
   if (!args(3).is_empty()) {
-    tmp = args(3).vector_value ();  
-  } 
+    tmp = args(3).vector_value ();
+  }
 
   OCTAVE_LOCAL_BUFFER (int, dimids, tmp.numel());
 
@@ -709,7 +709,7 @@ Defines a variable with the name @var{name} in the dataset @var{ncid}. @var{xtyp
     {
       dimids[i] = tmp(tmp.numel()-i-1);
     }
-  
+
   int varid;
 
   check_err(nc_def_var (ncid, name.c_str(), xtype, tmp.numel(), dimids, &varid));
@@ -721,7 +721,7 @@ Defines a variable with the name @var{name} in the dataset @var{ncid}. @var{xtyp
 // int nc_rename_var(int ncid, int varid, const char* name);
 
 
-DEFUN_DLD(netcdf_renameVar, args,, 
+DEFUN_DLD(netcdf_renameVar, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_renameVar(@var{ncid},@var{varid},@var{name}) \n\
 Renames the variable with the id @var{varid} in the data set @var{ncid}. @var{name} is the new name of the variable.\n\
@@ -729,7 +729,7 @@ Renames the variable with the id @var{varid} in the data set @var{ncid}. @var{na
 @seealso{netcdf_defVar}\n")
 {
 
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -752,7 +752,7 @@ Renames the variable with the id @var{varid} in the data set @var{ncid}. @var{na
 
 
 // int nc_def_var_fill(int ncid, int varid, int no_fill, void *fill_value);
-DEFUN_DLD(netcdf_defVarFill, args,, 
+DEFUN_DLD(netcdf_defVarFill, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_defVarFill(@var{ncid},@var{varid},@var{no_fill},@var{fillvalue}) \n\
 Define the fill-value settings of the NetCDF variable @var{varid}.\n\
@@ -761,7 +761,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
 @seealso{netcdf_inqVarFill}\n")
 {
 
-  if (args.length() != 4) 
+  if (args.length() != 4)
     {
       print_usage ();
       return octave_value();
@@ -770,13 +770,13 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
   int ncid = args(0).scalar_value();
   int varid = args(1).scalar_value();
   int no_fill = args(2).scalar_value(); // boolean
-  octave_value fill_value = args(3); 
+  octave_value fill_value = args(3);
   nc_type xtype;
 
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_vartype (ncid, varid, &xtype));
@@ -788,7 +788,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
 	{								\
         check_err(nc_def_var_fill(ncid, varid, no_fill, fill_value.method().fortran_vec())); \
 	  break;							\
-	}                                                                       
+	}
 
         OV_NETCDF_DEF_VAR_FILL(NC_BYTE, signed char, int8_array_value)
 	OV_NETCDF_DEF_VAR_FILL(NC_UBYTE, unsigned char, uint8_array_value)
@@ -811,7 +811,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
 
 
 // int nc_def_var_fill(int ncid, int varid, int no_fill, void *fill_value);
-DEFUN_DLD(netcdf_inqVarFill, args,, 
+DEFUN_DLD(netcdf_inqVarFill, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{no_fill},@var{fillvalue}] = } netcdf_inqVarFill(@var{ncid},@var{varid}) \n\
 Determines the fill-value settings of the NetCDF variable @var{varid}.\n\
@@ -820,7 +820,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
 @seealso{netcdf_defVarFill}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -836,14 +836,14 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_vartype (ncid, varid, &xtype));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   switch (xtype)
@@ -856,7 +856,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
                      fill_value.fortran_vec()));                                \
         data = octave_value(fill_value);                                        \
         break;                                                                  \
-      }                                                             
+      }
 
       OV_NETCDF_INQ_VAR_FILL(NC_BYTE,octave_int8)
       OV_NETCDF_INQ_VAR_FILL(NC_UBYTE,octave_uint8)
@@ -870,7 +870,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
       OV_NETCDF_INQ_VAR_FILL(NC_FLOAT,float)
       OV_NETCDF_INQ_VAR_FILL(NC_DOUBLE,double)
 
-      OV_NETCDF_INQ_VAR_FILL(NC_CHAR,char) 
+      OV_NETCDF_INQ_VAR_FILL(NC_CHAR,char)
           }
 
   //cout << "xtype3 " << xtype << " " << NC_DOUBLE << std::endl;
@@ -884,7 +884,7 @@ If @var{no_fill} is false, then the values between no-contiguous writes are fill
 
 //nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 //                        int deflate_level);
-DEFUN_DLD(netcdf_defVarDeflate, args,, 
+DEFUN_DLD(netcdf_defVarDeflate, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_defVarDeflate (@var{ncid},@var{varid},@var{shuffle},@var{deflate},@var{deflate_level}) \n\
 Define the compression settings NetCDF variable @var{varid}.\n\
@@ -893,7 +893,7 @@ If @var{deflate} is true, then the variable is compressed. The compression level
 @seealso{netcdf_inqVarDeflate}\n")
 {
 
-  if (args.length() != 5) 
+  if (args.length() != 5)
     {
       print_usage ();
       return octave_value();
@@ -908,7 +908,7 @@ If @var{deflate} is true, then the variable is compressed. The compression level
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_def_var_deflate (ncid, varid, shuffle, deflate, deflate_level));
@@ -918,7 +918,7 @@ If @var{deflate} is true, then the variable is compressed. The compression level
 
 //nc_inq_var_deflate(int ncid, int varid, int *shufflep,
 //                        int *deflatep, int *deflate_levelp);
-DEFUN_DLD(netcdf_inqVarDeflate, args,, 
+DEFUN_DLD(netcdf_inqVarDeflate, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{shuffle},@var{deflate},@var{deflate_level}] = } netcdf_inqVarDeflate (@var{ncid},@var{varid}) \n\
 Determines the compression settings NetCDF variable @var{varid}.\n\
@@ -927,7 +927,7 @@ If @var{deflate} is true, then the variable is compressed. The compression level
 @seealso{netcdf_defVarDeflate}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -945,11 +945,11 @@ If @var{deflate} is true, then the variable is compressed. The compression level
     // nc_inq_var_deflate returns garbage for classic or 64bit files
     if (format == NC_FORMAT_CLASSIC || format == NC_FORMAT_64BIT) {
       shuffle = 0;
-      deflate = 0; 
+      deflate = 0;
       deflate_level = 0;
     }
     else {
-      check_err(nc_inq_var_deflate(ncid, varid, 
+      check_err(nc_inq_var_deflate(ncid, varid,
                                    &shuffle,&deflate,&deflate_level));
     }
 
@@ -963,7 +963,7 @@ If @var{deflate} is true, then the variable is compressed. The compression level
 
 //int nc_def_var_chunking(int ncid, int varid, int storage, size_t *chunksizesp);
 //chunksizes can be ommited if storage is \"CONTIGUOUS\"
-DEFUN_DLD(netcdf_defVarChunking, args,, 
+DEFUN_DLD(netcdf_defVarChunking, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_defVarChunking (@var{ncid},@var{varid},@var{storage},@var{chunkSizes}) \n\
 Define the chunking settings of NetCDF variable @var{varid}.\n\
@@ -973,7 +973,7 @@ If @var{storage} is the string \"contiguous\", the variable is stored in a conti
 @seealso{netcdf_inqVarChunking}\n")
 {
 
-  if (args.length() != 3 && args.length() != 4) 
+  if (args.length() != 3 && args.length() != 4)
     {
       print_usage ();
       return octave_value();
@@ -1013,7 +1013,7 @@ If @var{storage} is the string \"contiguous\", the variable is stored in a conti
 }
 
 //int nc_inq_var_chunking(int ncid, int varid, int *storagep, size_t *chunksizesp);
-DEFUN_DLD(netcdf_inqVarChunking, args,, 
+DEFUN_DLD(netcdf_inqVarChunking, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{storage},@var{chunkSizes}] = } netcdf_inqVarChunking (@var{ncid},@var{varid}) \n\
 Determines the chunking settings of NetCDF variable @var{varid}.\n\
@@ -1023,7 +1023,7 @@ If @var{storage} is the string \"contiguous\", the variable is stored in a conti
 @seealso{netcdf_defVarChunking}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1063,7 +1063,7 @@ If @var{storage} is the string \"contiguous\", the variable is stored in a conti
 }
 
 // nc_def_var_fletcher32(int ncid, int varid, int checksum);
-DEFUN_DLD(netcdf_defVarFletcher32, args,, 
+DEFUN_DLD(netcdf_defVarFletcher32, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_defVarFletcher32(@var{ncid},@var{varid},@var{checksum}) \n\
 Defines the checksum settings of the variable with the id @var{varid} in the data set @var{ncid}. If @var{checksum} is the string \"FLETCHER32\", then fletcher32 checksums will be turned on for this variable. If @var{checksum} is \"NOCHECKSUM\", then checksums will be disabled. \n\
@@ -1071,7 +1071,7 @@ Defines the checksum settings of the variable with the id @var{varid} in the dat
 @seealso{netcdf_defVar,netcdf_inqVarFletcher32}\n")
 {
 
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -1094,7 +1094,7 @@ Defines the checksum settings of the variable with the id @var{varid} in the dat
 
 
 
-DEFUN_DLD(netcdf_inqVarFletcher32, args,, 
+DEFUN_DLD(netcdf_inqVarFletcher32, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{checksum} =} netcdf_inqVarFletcher32(@var{ncid},@var{varid}) \n\
 Determines the checksum settings of the variable with the id @var{varid} in the data set @var{ncid}. If fletcher32 checksums is turned on for this variable, then @var{checksum} is the string \"FLETCHER32\". Otherwise it is the string \"NOCHECKSUM\". \n\
@@ -1102,7 +1102,7 @@ Determines the checksum settings of the variable with the id @var{varid} in the 
 @seealso{netcdf_defVar,netcdf_inqVarFletcher32}\n")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1120,26 +1120,26 @@ Determines the checksum settings of the variable with the id @var{varid} in the 
 
   check_err(nc_inq_var_fletcher32(ncid, varid, &checksum));
 
-  if (checksum == NC_FLETCHER32) 
+  if (checksum == NC_FLETCHER32)
     {
       return octave_value("FLETCHER32");
     }
-  else 
+  else
     {
       return octave_value("NOCHECKSUM");
-    }  
+    }
 }
 
 
 
-DEFUN_DLD(netcdf_endDef, args,, 
+DEFUN_DLD(netcdf_endDef, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_endDef (@var{ncid}) \n\
 Leaves define-mode of NetCDF file @var{ncid}.\n\
 @end deftypefn\n\
 @seealso{netcdf_reDef}\n")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -1150,22 +1150,22 @@ Leaves define-mode of NetCDF file @var{ncid}.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_enddef (ncid));
-  
+
   return octave_value();
 }
 
-DEFUN_DLD(netcdf_reDef, args,, 
+DEFUN_DLD(netcdf_reDef, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_reDef (@var{ncid}) \n\
 Enter define-mode of NetCDF file @var{ncid}.\n\
 @end deftypefn\n\
 @seealso{netcdf_endDef}\n")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -1176,17 +1176,17 @@ Enter define-mode of NetCDF file @var{ncid}.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_redef (ncid));
-  
+
   return octave_value();
 }
 
 // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c/nc_005fput_005fvar_005f-type.html#nc_005fput_005fvar_005f-type
 
-DEFUN_DLD(netcdf_putVar, args,, 
+DEFUN_DLD(netcdf_putVar, args,,
 "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} {} netcdf_putVar (@var{ncid},@var{varid},@var{data}) \n\
 @deftypefnx {Loadable Function} {} netcdf_putVar (@var{ncid},@var{varid},@var{start},@var{data}) \n\
@@ -1200,20 +1200,20 @@ The data @var{data} is stored in the variable @var{varid} of the NetCDF file @va
 @end deftypefn\n\
 @seealso{netcdf_endDef}\n")
 {
-  if (args.length() < 3 || args.length() > 6) 
+  if (args.length() < 3 || args.length() > 6)
     {
       print_usage ();
       return octave_value();
     }
 
   int ncid = args(0).scalar_value();
-  int varid = args(1).scalar_value (); 
+  int varid = args(1).scalar_value ();
   octave_value data = args(args.length()-1);
 
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   int ndims;
@@ -1231,7 +1231,7 @@ The data @var{data} is stored in the variable @var{varid} of the NetCDF file @va
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   start_count_stride(ncid, varid, args, args.length()-1, ndims, start, count, stride);
@@ -1245,7 +1245,7 @@ The data @var{data} is stored in the variable @var{varid} of the NetCDF file @va
 	{								\
 	  check_err(nc_put_vars (ncid, varid, start, count, stride, (c_type*)data.method().fortran_vec())); \
 	  break;							\
-	}                                                                       
+	}
 
       OV_NETCDF_PUT_VAR(NC_BYTE, signed char, int8_array_value)
 	OV_NETCDF_PUT_VAR(NC_UBYTE, unsigned char, uint8_array_value)
@@ -1260,17 +1260,17 @@ The data @var{data} is stored in the variable @var{varid} of the NetCDF file @va
 	OV_NETCDF_PUT_VAR(NC_DOUBLE,double,array_value)
 
 	OV_NETCDF_PUT_VAR(NC_CHAR, char, char_array_value)
-      default: 
+      default:
 	{
 	  error("unknown type %d" ,xtype);
-	}	
+	}
     }
   return octave_value();
 }
 
 
 
-DEFUN_DLD(netcdf_getVar, args,, 	  
+DEFUN_DLD(netcdf_getVar, args,,
 "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} {@var{data} =} netcdf_getVar (@var{ncid},@var{varid}) \n\
 @deftypefnx {Loadable Function} {@var{data} =} netcdf_getVar (@var{ncid},@var{varid},@var{start}) \n\
@@ -1284,14 +1284,14 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
 @end deftypefn\n\
 @seealso{netcdf_putVar}\n")
 {
-  if (args.length() < 2 || args.length() > 5) 
+  if (args.length() < 2 || args.length() > 5)
     {
       print_usage ();
       return octave_value();
     }
 
   int ncid = args(0).scalar_value();
-  int varid = args(1).scalar_value ();   
+  int varid = args(1).scalar_value ();
   std::list<Range> ranges;
   int ndims;
   octave_value data;
@@ -1300,14 +1300,14 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_vartype (ncid, varid, &xtype));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_varndims (ncid, varid, &ndims));
@@ -1316,7 +1316,7 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   OCTAVE_LOCAL_BUFFER (size_t, start, ndims);
@@ -1327,7 +1327,7 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
 
   dim_vector sliced_dim_vector;
 
-  if (ndims < 2) 
+  if (ndims < 2)
     {
       sliced_dim_vector.resize(2);
       sliced_dim_vector(0) = 1;
@@ -1346,7 +1346,7 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
 
@@ -1360,13 +1360,13 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
   // std::cout << "sz " << sz << std::endl;
   // std::cout << "sliced_dim_vector " << sliced_dim_vector(0) << " x " << sliced_dim_vector(1) << std::endl;
 
-  // Array < float > arr = Array < float >(sliced_dim_vector);   
+  // Array < float > arr = Array < float >(sliced_dim_vector);
   // float* time;
   // time = (float*)malloc(10 * sizeof(float));
   // check_err(nc_get_vars(ncid, varid, start, count, stride, time));
-  // data = octave_value(arr);                                                  
+  // data = octave_value(arr);
   // return data;
-      
+
   switch (xtype)
     {
 #define OV_NETCDF_GET_VAR_CASE(netcdf_type,c_type)	                                 \
@@ -1379,7 +1379,7 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
         }                                                                                \
 	data = octave_value(arr);                                                        \
 	break;                                                                           \
-      }                                                                                 
+      }
 
       OV_NETCDF_GET_VAR_CASE(NC_BYTE,octave_int8)
       OV_NETCDF_GET_VAR_CASE(NC_UBYTE,octave_uint8)
@@ -1393,19 +1393,19 @@ The data @var{data} is loaded from the variable @var{varid} of the NetCDF file @
       OV_NETCDF_GET_VAR_CASE(NC_FLOAT,float)
       OV_NETCDF_GET_VAR_CASE(NC_DOUBLE,double)
 
-      OV_NETCDF_GET_VAR_CASE(NC_CHAR, char) 
+      OV_NETCDF_GET_VAR_CASE(NC_CHAR, char)
 
-      default: 
+      default:
 	{
 	  error("unknown type %d" ,xtype);
-	}	
+	}
 
     }
 
   return data;
 }
 
-DEFUN_DLD(netcdf_close, args,, 
+DEFUN_DLD(netcdf_close, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_close(@var{ncid}) \n\
 Close the NetCDF file with the id @var{ncid}.\n\
@@ -1413,7 +1413,7 @@ Close the NetCDF file with the id @var{ncid}.\n\
 @seealso{netcdf_open}\n")
 {
 
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -1424,7 +1424,7 @@ Close the NetCDF file with the id @var{ncid}.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_close(ncid));
@@ -1435,7 +1435,7 @@ Close the NetCDF file with the id @var{ncid}.\n\
 
 //  int nc_inq_attname(int ncid, int varid, int attnum, char *name);
 
-DEFUN_DLD(netcdf_inqAttName, args,, 
+DEFUN_DLD(netcdf_inqAttName, args,,
 "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} {@var{name} =} netcdf_inqAttName (@var{ncid},@var{varid},@var{attnum}) \n\
 Get the name of a NetCDF attribute.\n\
@@ -1458,16 +1458,16 @@ netcdf_getConstant(\"global\").\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_attname(ncid, varid, attnum, name));
 
-  return octave_value(std::string(name));  
+  return octave_value(std::string(name));
 }
 
 
-DEFUN_DLD(netcdf_inqAttID, args,, 
+DEFUN_DLD(netcdf_inqAttID, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{attnum} =} netcdf_inqAttID(@var{ncid},@var{varid},@var{attname}) \n\
 Return the attribute id @var{attnum} of the attribute named @var{attname} of the variable @var{varid} in the dataset @var{ncid}. \n\
@@ -1476,7 +1476,7 @@ netcdf_getConstant(\"global\").\n\
 @seealso{netcdf_inqAttName}\n\
 @end deftypefn")
 {
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value ();
@@ -1501,14 +1501,14 @@ netcdf_getConstant(\"global\").\n\
 //int nc_inq_att    (int ncid, int varid, const char *name,
 //                        nc_type *xtypep, size_t *lenp);
 
-DEFUN_DLD(netcdf_inqAtt, args,, 
+DEFUN_DLD(netcdf_inqAtt, args,,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{xtype},@var{len}] = } netcdf_inqAtt(@var{ncid},@var{varid},@var{name}) \n\
 Get attribute type and length.\n\
 @seealso{netcdf_inqAttName}\n\
 @end deftypefn")
 {
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -1524,18 +1524,18 @@ Get attribute type and length.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_att(ncid, varid, name.c_str(), &xtype, &len));
-  
+
   retval(0) = octave_value(xtype);
   retval(1) = octave_value(len);
   return retval;
 }
 
 
-DEFUN_DLD(netcdf_getAtt, args,, 
+DEFUN_DLD(netcdf_getAtt, args,,
 "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} {@var{data} =} netcdf_getAtt (@var{ncid},@var{varid},@var{name}) \n\
 Get the value of a NetCDF attribute.\n\
@@ -1545,7 +1545,7 @@ netcdf_getConstant(\"global\").\n\
 @seealso{netcdf_putAtt}\n\
 @end deftypefn")
 {
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value();
@@ -1561,14 +1561,14 @@ netcdf_getConstant(\"global\").\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_att(ncid, varid, attname.c_str(), &xtype, &len));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
 #define OV_NETCDF_GET_ATT_CASE(netcdf_type,c_type)	                        \
@@ -1577,7 +1577,7 @@ netcdf_getConstant(\"global\").\n\
         Array< c_type > arr = Array< c_type >(dim_vector(1,len));               \
         check_err(nc_get_att(ncid, varid, attname.c_str(), arr.fortran_vec())); \
         data = octave_value(arr);                                               \
-      }                                                                                 
+      }
       OV_NETCDF_GET_ATT_CASE(NC_BYTE,octave_int8)
       OV_NETCDF_GET_ATT_CASE(NC_UBYTE,octave_uint8)
       OV_NETCDF_GET_ATT_CASE(NC_SHORT,octave_int16)
@@ -1590,14 +1590,14 @@ netcdf_getConstant(\"global\").\n\
       OV_NETCDF_GET_ATT_CASE(NC_FLOAT,float)
       OV_NETCDF_GET_ATT_CASE(NC_DOUBLE,double)
 
-      OV_NETCDF_GET_ATT_CASE(NC_CHAR, char) 
+      OV_NETCDF_GET_ATT_CASE(NC_CHAR, char)
 
-	    
+
   return data;
 }
 
 
-DEFUN_DLD(netcdf_putAtt, args,, 
+DEFUN_DLD(netcdf_putAtt, args,,
 "-*- texinfo -*-\n\
 @deftypefn  {Loadable Function} {} netcdf_putAtt (@var{ncid},@var{varid},@var{name},@var{data}) \n\
 Defines a NetCDF attribute.\n\
@@ -1608,7 +1608,7 @@ netcdf_getConstant(\"global\").\n\
 @seealso{netcdf_getAtt}\n\
 @end deftypefn")
 {
-  if (args.length() != 4) 
+  if (args.length() != 4)
     {
       print_usage ();
       return octave_value();
@@ -1624,7 +1624,7 @@ netcdf_getConstant(\"global\").\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   // get matching netcdf type
@@ -1662,7 +1662,7 @@ netcdf_getConstant(\"global\").\n\
 	{								\
 	  check_err(nc_put_att (ncid, varid, attname.c_str(), xtype, len, data.method().fortran_vec())); \
 	  break;							\
-	}                                                                       
+	}
 
       OV_NETCDF_PUT_ATT(NC_BYTE, signed char, int8_array_value)
 	OV_NETCDF_PUT_ATT(NC_UBYTE, unsigned char, uint8_array_value)
@@ -1687,7 +1687,7 @@ netcdf_getConstant(\"global\").\n\
 }
 
 
-DEFUN_DLD(netcdf_copyAtt, args,, 
+DEFUN_DLD(netcdf_copyAtt, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_copyAtt (@var{ncid},@var{varid},@var{name},@var{ncid_out},@var{varid_out}) \n\
 Copies the attribute named @var{old_name} of the variable @var{varid} in the data set @var{ncid} \n\
@@ -1697,7 +1697,7 @@ To copy a global attribute use netcdf_getConstant(\"global\") for @var{varid} or
 @end deftypefn")
 {
 
-  if (args.length() != 5) 
+  if (args.length() != 5)
     {
       print_usage ();
       return octave_value ();
@@ -1722,7 +1722,7 @@ To copy a global attribute use netcdf_getConstant(\"global\") for @var{varid} or
 }
 
 
-DEFUN_DLD(netcdf_renameAtt, args,, 
+DEFUN_DLD(netcdf_renameAtt, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_renameAtt(@var{ncid},@var{varid},@var{old_name},@var{new_name}) \n\
 Renames the attribute named @var{old_name} of the variable @var{varid} in the data set @var{ncid}. @var{new_name} is the new name of the attribute.\n\
@@ -1731,7 +1731,7 @@ To rename a global attribute use netcdf_getConstant(\"global\") for @var{varid}.
 @end deftypefn")
 {
 
-  if (args.length() != 4) 
+  if (args.length() != 4)
     {
       print_usage ();
       return octave_value ();
@@ -1754,7 +1754,7 @@ To rename a global attribute use netcdf_getConstant(\"global\") for @var{varid}.
 }
 
 
-DEFUN_DLD(netcdf_delAtt, args,, 
+DEFUN_DLD(netcdf_delAtt, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} netcdf_delAtt(@var{ncid},@var{varid},@var{name}) \n\
 Deletes the attribute named @var{name} of the variable @var{varid} in the data set @var{ncid}. \n\
@@ -1763,7 +1763,7 @@ To delete a global attribute use netcdf_getConstant(\"global\") for @var{varid}.
 @end deftypefn")
 {
 
-  if (args.length() != 3) 
+  if (args.length() != 3)
     {
       print_usage ();
       return octave_value ();
@@ -1785,7 +1785,7 @@ To delete a global attribute use netcdf_getConstant(\"global\") for @var{varid}.
 }
 
 
-DEFUN_DLD(netcdf_inqVarID, args,, 
+DEFUN_DLD(netcdf_inqVarID, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{varid} = } netcdf_inqVarID (@var{ncid},@var{name}) \n\
 Return the id of a variable based on its name.\n\
@@ -1793,7 +1793,7 @@ Return the id of a variable based on its name.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1806,7 +1806,7 @@ Return the id of a variable based on its name.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_varid(ncid,varname.c_str(), &varid));
@@ -1814,7 +1814,7 @@ Return the id of a variable based on its name.\n\
   return octave_value(varid);
 }
 
-DEFUN_DLD(netcdf_inqVarIDs, args,, 
+DEFUN_DLD(netcdf_inqVarIDs, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{varids} = } netcdf_inqVarID (@var{ncid}) \n\
 Return all variable ids.\n\
@@ -1823,7 +1823,7 @@ This functions returns all variable ids in a NetCDF file or NetCDF group.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value ();
@@ -1835,14 +1835,14 @@ This functions returns all variable ids in a NetCDF file or NetCDF group.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_varids(ncid, &nvars, NULL));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   OCTAVE_LOCAL_BUFFER(int,tmp,nvars);
@@ -1856,7 +1856,7 @@ This functions returns all variable ids in a NetCDF file or NetCDF group.\n\
   return octave_value(varids);
 }
 
-DEFUN_DLD(netcdf_inqVar, args,, 
+DEFUN_DLD(netcdf_inqVar, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{name},@var{nctype},@var{dimids},@var{nattr}] = } netcdf_inqVarID (@var{ncid},@var{varid}) \n\
 Inquires information about a NetCDF variable.\n\
@@ -1867,7 +1867,7 @@ integer corresponding NetCDF constants.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1880,29 +1880,29 @@ integer corresponding NetCDF constants.\n\
   nc_type xtype;
   octave_value_list retval;
 
-  if (error_state) 
+  if (error_state)
     {
-      print_usage ();      
+      print_usage ();
       return octave_value();
     }
-    
+
   check_err(nc_inq_varndims(ncid, varid, &ndims));
   OCTAVE_LOCAL_BUFFER (int, dimids, ndims);
-    
-  if (error_state) 
+
+  if (error_state)
     {
       return octave_value();
     }
 
   check_err(nc_inq_var(ncid, varid, name, &xtype,
 		       &ndims, dimids, &natts));
-    
+
   retval(0) = octave_value(std::string(name));
   retval(1) = octave_value(xtype);
 
   // copy output arguments
   Array<double> dimids_ = Array<double>(dim_vector(1,ndims));
-  for (int i = 0; i < ndims; i++) 
+  for (int i = 0; i < ndims; i++)
     {
       dimids_(i) = dimids[ndims-i-1];
     }
@@ -1915,7 +1915,7 @@ integer corresponding NetCDF constants.\n\
 
 
 
-DEFUN_DLD(netcdf_inqDim, args,, 
+DEFUN_DLD(netcdf_inqDim, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{name},@var{length}] =} netcdf_inqDim(@var{ncid},@var{dimid}) \n\
 Returns the name and length of a NetCDF dimension.\n\
@@ -1923,7 +1923,7 @@ Returns the name and length of a NetCDF dimension.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1933,12 +1933,12 @@ Returns the name and length of a NetCDF dimension.\n\
   int dimid = args(1).scalar_value();
   octave_value_list retval;
 
-  if (! error_state) 
+  if (! error_state)
     {
       char name[NC_MAX_NAME+1];
       size_t length;
       check_err(nc_inq_dim(ncid, dimid, name, &length));
-      
+
       retval(0) = octave_value(std::string(name));
       retval(1) = octave_value(length);
     }
@@ -1947,7 +1947,7 @@ Returns the name and length of a NetCDF dimension.\n\
 }
 
 
-DEFUN_DLD(netcdf_inqDimID, args,, 
+DEFUN_DLD(netcdf_inqDimID, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{dimid} =} netcdf_inqDimID(@var{ncid},@var{dimname}) \n\
 Return the id of a NetCDF dimension.\n\
@@ -1955,7 +1955,7 @@ Return the id of a NetCDF dimension.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1966,9 +1966,9 @@ Return the id of a NetCDF dimension.\n\
   int id;
   octave_value_list retval;
 
-  if (! error_state) 
+  if (! error_state)
     {
-      check_err(nc_inq_dimid(ncid, dimname.c_str(), &id));      
+      check_err(nc_inq_dimid(ncid, dimname.c_str(), &id));
       retval(0) = octave_value(id);
     }
 
@@ -1976,7 +1976,7 @@ Return the id of a NetCDF dimension.\n\
 }
 
 // int nc_inq_dimids(int ncid, int *ndims, int *dimids, int include_parents);
-DEFUN_DLD(netcdf_inqDimIDs, args,, 
+DEFUN_DLD(netcdf_inqDimIDs, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{dimids} =} netcdf_inqDimID(@var{ncid}) \n\
 @deftypefnx {Loadable Function} {@var{dimids} =} netcdf_inqDimID(@var{ncid},@var{include_parents}) \n\
@@ -1986,7 +1986,7 @@ Per default this is not the case (@var{include_parents} is 0).\n\
 @seealso{netcdf_inqDim}\n\
 @end deftypefn")
 {
-  if (args.length() != 1 && args.length() != 2) 
+  if (args.length() != 1 && args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -1994,15 +1994,15 @@ Per default this is not the case (@var{include_parents} is 0).\n\
 
   int ncid = args(0).scalar_value();
   int include_parents = 0;
-  if (args.length() == 2) 
+  if (args.length() == 2)
     {
-      include_parents = args(0).scalar_value();  
+      include_parents = args(0).scalar_value();
     }
 
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   int ndims;
@@ -2015,7 +2015,7 @@ Per default this is not the case (@var{include_parents} is 0).\n\
   for (int i=0; i < ndims; i++) {
     dimids(i) = tmp[i];
   }
-    
+
   return octave_value(dimids);
 }
 
@@ -2025,7 +2025,7 @@ Per default this is not the case (@var{include_parents} is 0).\n\
 
 //int nc_def_grp(int parent_ncid, const char *name, int *new_ncid);
 
-DEFUN_DLD(netcdf_defGrp, args,, 
+DEFUN_DLD(netcdf_defGrp, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{new_ncid} =} netcdf_defGrp(@var{ncid},@var{name}) \n\
 Define a group in a NetCDF file.\n\
@@ -2033,7 +2033,7 @@ Define a group in a NetCDF file.\n\
 @end deftypefn")
 {
 
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -2046,7 +2046,7 @@ Define a group in a NetCDF file.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_def_grp(parent_ncid, name.c_str(), &new_ncid));
@@ -2055,14 +2055,14 @@ Define a group in a NetCDF file.\n\
 
 
 // int nc_inq_grps(int ncid, int *numgrps, int *ncids);
-DEFUN_DLD(netcdf_inqGrps, args,, 
+DEFUN_DLD(netcdf_inqGrps, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{ncids} =} netcdf_inqGrps(@var{ncid}) \n\
 Return all groups ids in a NetCDF file.\n\
 @seealso{netcdf_inqGrps}\n\
 @end deftypefn")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -2074,14 +2074,14 @@ Return all groups ids in a NetCDF file.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_grps(ncid, &numgrps, NULL));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   OCTAVE_LOCAL_BUFFER(int,tmp,numgrps);
@@ -2091,19 +2091,19 @@ Return all groups ids in a NetCDF file.\n\
   for (int i=0; i < numgrps; i++) {
     ncids(i) = tmp[i];
   }
-    
+
   return octave_value(ncids);
 }
 
 //int nc_inq_grpname(int ncid, char *name);
-DEFUN_DLD(netcdf_inqGrpName, args,, 
+DEFUN_DLD(netcdf_inqGrpName, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{name} =} netcdf_inqGrpName(@var{ncid}) \n\
 Return group name in a NetCDF file.\n\
 @seealso{netcdf_inqGrps}\n\
 @end deftypefn")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -2115,28 +2115,28 @@ Return group name in a NetCDF file.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
-  check_err(nc_inq_grpname(ncid, name));    
+  check_err(nc_inq_grpname(ncid, name));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   return octave_value(std::string(name));
 }
 
 //int nc_inq_grpname_full(int ncid, size_t *lenp, char *full_name);
-DEFUN_DLD(netcdf_inqGrpNameFull, args,, 
+DEFUN_DLD(netcdf_inqGrpNameFull, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{name} =} netcdf_inqGrpNameFull(@var{ncid}) \n\
 Return full name of group in NetCDF file.\n\
 @seealso{netcdf_inqGrpName}\n\
 @end deftypefn")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -2148,14 +2148,14 @@ Return full name of group in NetCDF file.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_grpname_len(ncid,&len));
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
   char* name = new char[len+1];
@@ -2165,7 +2165,7 @@ Return full name of group in NetCDF file.\n\
   if (error_state)
     {
       delete[] name;
-      return octave_value();      
+      return octave_value();
     }
 
   retval = octave_value(std::string(name));
@@ -2174,14 +2174,14 @@ Return full name of group in NetCDF file.\n\
 }
 
 // int nc_inq_grp_parent(int ncid, int *parent_ncid);
-DEFUN_DLD(netcdf_inqGrpParent, args,, 
+DEFUN_DLD(netcdf_inqGrpParent, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{parent_ncid} =} netcdf_inqGrpParent(@var{ncid}) \n\
 Return id of the parent group\n\
 @seealso{netcdf_inqGrpName}\n\
 @end deftypefn")
 {
-  if (args.length() != 1) 
+  if (args.length() != 1)
     {
       print_usage ();
       return octave_value();
@@ -2193,7 +2193,7 @@ Return id of the parent group\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   check_err(nc_inq_grp_parent(ncid, &parent_ncid));
@@ -2201,14 +2201,14 @@ Return id of the parent group\n\
 }
 
 // int nc_inq_grp_full_ncid(int ncid, char *full_name, int *grp_ncid);
-DEFUN_DLD(netcdf_inqGrpFullNcid, args,, 
+DEFUN_DLD(netcdf_inqGrpFullNcid, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{grp_ncid} =} netcdf_inqGrpFullNcid(@var{ncid},@var{name}) \n\
 Return the group id based on the full group name.\n\
 @seealso{netcdf_inqGrpName}\n\
 @end deftypefn")
 {
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -2221,7 +2221,7 @@ Return the group id based on the full group name.\n\
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
   int format;
@@ -2229,16 +2229,16 @@ Return the group id based on the full group name.\n\
 
   if (error_state)
     {
-      return octave_value();      
+      return octave_value();
     }
 
-  if (format == NC_FORMAT_CLASSIC || format == NC_FORMAT_64BIT) 
+  if (format == NC_FORMAT_CLASSIC || format == NC_FORMAT_64BIT)
     {
-      if (name == "/") 
+      if (name == "/")
         {
           return octave_value(ncid);
         }
-      else 
+      else
         {
           error("groups are not supported in this format");
           return octave_value();
@@ -2254,14 +2254,14 @@ Return the group id based on the full group name.\n\
 
 
 // int nc_inq_ncid(int ncid, const char *name, int *grp_ncid);
-DEFUN_DLD(netcdf_inqNcid, args,, 
+DEFUN_DLD(netcdf_inqNcid, args,,
   "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{grp_ncid} =} netcdf_inqNcid(@var{ncid},@var{name}) \n\
 Return group id based on its name\n\
 @seealso{netcdf_inqGrpFullNcid}\n\
 @end deftypefn")
 {
-  if (args.length() != 2) 
+  if (args.length() != 2)
     {
       print_usage ();
       return octave_value();
@@ -2270,13 +2270,13 @@ Return group id based on its name\n\
   int ncid = args(0).scalar_value();
   std::string name = args(1).string_value();
   int grp_ncid;
-  
+
   if (error_state)
     {
       print_usage ();
-      return octave_value();      
+      return octave_value();
     }
 
-  check_err(nc_inq_ncid(ncid, name.c_str(), &grp_ncid));    
+  check_err(nc_inq_ncid(ncid, name.c_str(), &grp_ncid));
   return octave_value(grp_ncid);
 }
