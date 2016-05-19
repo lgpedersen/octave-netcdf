@@ -1,3 +1,8 @@
+Summary of important user-visible changes for netcdf 1.0.11:
+-------------------------------------------------------------------
+
+ ** Fix cleaning of files (thanks to Rafael Laboissiere)
+
 Summary of important user-visible changes for netcdf 1.0.10:
 -------------------------------------------------------------------
 

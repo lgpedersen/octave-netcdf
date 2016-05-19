@@ -15,10 +15,10 @@ constants:
 	$(AWK) -f netcdf_constants.awk $(NCHEADER)  > netcdf_constants.h
 
 clean:
-	rm __netcdf__.oct 
+	rm -f __netcdf__.o __netcdf__.oct
 
 real-clean: clean
-	rm ../PKG_ADD ../inst/import_netcdf.m 
+	rm -f ../PKG_ADD ../inst/import_netcdf.m
 
 __netcdf__.oct: $(SRC) netcdf_constants.h
 	$(MKOCTFILE) $(CFLAGS) $(SRC) $(LIBS)
