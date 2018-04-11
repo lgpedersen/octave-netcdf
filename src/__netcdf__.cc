@@ -26,6 +26,8 @@
 #include <vector>
 #include <inttypes.h>
 
+#include "config.h"
+
 // Octave constructor to hold an array of ints
 #define NETCDF_INT_ARRAY int32NDArray
 std::map<std::string, octave_value> netcdf_constants;
@@ -699,7 +701,7 @@ Defines a variable with the name @var{name} in the dataset @var{ncid}. @var{xtyp
 
   Array<double> tmp;
 
-  if (!args(3).is_empty()) {
+  if (!args(3).OV_ISEMPTY()) {
     tmp = args(3).vector_value ();
   }
 
