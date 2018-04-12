@@ -31,7 +31,7 @@ __netcdf__.oct: $(SRC) netcdf_constants.h
 	$(MKOCTFILE) $(NETCDF_CPPFLAGS) $(SRC) $(NETCDF_LIBS)
 
 ../PKG_ADD: $(SRC)
-	$(shell PKG_ADD.sh)
+	$(shell sh ./PKG_ADD.sh)
 
 check: ../PKG_ADD __netcdf__.oct
 	($(OCTAVE) -f --eval "pkg unload octcdf; addpath $$PWD; addpath $$PWD/../inst; test_netcdf")
