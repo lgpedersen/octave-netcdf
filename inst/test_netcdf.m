@@ -37,7 +37,7 @@ for iindex=1:length(tests);
   end
 end
 
-%% Copyright (C) 2013 Alexander Barth
+%% Copyright (C) 2013-2018 Alexander Barth
 %%
 %% This program is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
