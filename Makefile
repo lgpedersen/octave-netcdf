@@ -8,6 +8,7 @@
 ## are permitted in any medium without royalty provided the copyright
 ## notice and this notice are preserved.  This file is offered as-is,
 ## without any warranty.
+TOPDIR := $(shell pwd)
 
 ## Some basic tools (can be overriden using environment variables)
 SED ?= sed
@@ -214,10 +215,9 @@ doctest: $(install_stamp)
 
 ## Test package.
 octave_test_commands = \
-' dirs = {"inst", "src"}; \
-  dirs(cellfun (@ (x) ! isdir (x), dirs)) = []; \
-  if (isempty (dirs)) error ("no \"inst\" or \"src\" directory"); exit (1); \
-    else __run_test_suite__ (dirs, {}); endif '
+' pkgs = pkg("list", "$(package)"); \
+  dirs = {pkgs{1}.dir}; \
+  __run_test_suite__ (dirs, {}); '
 ## the following works, too, but provides no overall summary output as
 ## __run_test_suite__ does:
 ##
