@@ -19,7 +19,7 @@
 ## Defines the attribute @var{attname} of the variable @var{varname} in the file
 ## @var{filename} with the value @var{val}.
 ##
-## Gobal attributes can be defined by using "/" or the group name as 
+## Global attributes can be defined by using "/" or the group name as 
 ## @var{varname}. The type of value is mapped to the NetCDF data types.
 ## (see @code{ncinfo}).
 ##
