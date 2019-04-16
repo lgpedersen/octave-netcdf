@@ -49,6 +49,9 @@ MKOCTFILE ?= mkoctfile
 ## Command used to set permissions before creating tarballs
 FIX_PERMISSIONS ?= chmod -R a+rX,u+w,go-w,ug-s
 
+GIT          := git
+GIT_TIMESTAMP := $(firstword $(shell $(GIT) log -n1 --date=unix --format="%ad"))
+
 ## Detect which VCS is used
 vcs := $(if $(wildcard .hg),hg,$(if $(wildcard .git),git,unknown))
 ifeq ($(vcs),hg)
@@ -58,6 +61,8 @@ ifeq ($(vcs),git)
 release_dir_dep := .git/index
 endif
 
+TAR_REPRODUCIBLE_OPTIONS := --sort=name --mtime="@$(GIT_TIMESTAMP)" --owner=0 --group=0 --numeric-owner
+TAR_OPTIONS  := --format=ustar $(TAR_REPRODUCIBLE_OPTIONS)
 
 ## .PHONY indicates targets that are not filenames
 ## (https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html)
@@ -96,7 +101,7 @@ html: $(html_tarball)
 
 ## An implicit rule with a recipe to build the tarballs correctly.
 %.tar.gz: %
-	$(TAR) -c -f - --posix -C "$(target_dir)/" "$(notdir $<)" | gzip -9n > "$@"
+	$(TAR) -cf - $(TAR_OPTIONS) -C "$(target_dir)/" "$(notdir $<)" | gzip -9n > "$@"
 
 clean-tarballs:
 	@echo "## Cleaning release tarballs (package + html)..."
