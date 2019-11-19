@@ -130,8 +130,3 @@ data2 = ncread(fname,'flag');
 assert(isequal(data,data2))
 delete(fname)
 
-
-
-% test case for bug  47014
-
-bug_47014
