@@ -9,4 +9,4 @@ Depends: octave (>= 3.4.0)
 BuildRequires: netcdf-devel [Fedora]
  libnetcdf-dev [Debian], netcdf-bin [Debian]
 License: GPLv2+
-Url: https://github.com/Alexander-Barth/octave-netcdf/wiki, http://octave.sf.net
+Url: http://octave.sf.net
