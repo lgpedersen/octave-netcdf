@@ -1,3 +1,10 @@
+Summary of important user-visible changes for netcdf 1.0.13:
+-------------------------------------------------------------------
+
+ ** Update to depend on Octave 3.8+
+
+ ** Update for Octave 5 and newer
+
 Summary of important user-visible changes for netcdf 1.0.12:
 -------------------------------------------------------------------
 
