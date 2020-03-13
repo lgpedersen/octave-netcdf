@@ -19,7 +19,15 @@ SRC = __netcdf__.cc
 all: __netcdf__.oct ../PKG_ADD
 
 netcdf_constants.h:
-	$(AWK) -f netcdf_constants.awk $(NCHEADER)  > netcdf_constants.h
+	$(info generating netcdf_constants.h)
+	@if [ -f $(NCHEADER) ]; then \
+	  $(AWK) -f netcdf_constants.awk $(NCHEADER)  > netcdf_constants.h; \
+	elif [ -f /usr/include/netcdf.h ]; then \
+	  $(AWK) -f netcdf_constants.awk /usr/include/netcdf.h > netcdf_constants.h; \
+	else \
+	  echo >&2 "Couldnt find netcdf.h"; \
+	  false; \
+	fi;
 
 clean:
 	rm -f __netcdf__.o __netcdf__.oct netcdf_constants.h
