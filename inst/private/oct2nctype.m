@@ -1,4 +1,4 @@
-%% Copyright (C) 2013 Alexander Barth
+%% Copyright (C) 2013-2020 Alexander Barth
 %%
 %% This program is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ typemap.uint64 = 'uint64';
 typemap.single = 'float';
 typemap.double = 'double';
 typemap.char   = 'char';
+typemap.string   = 'string';
 
 if ischar(otype)
   otype = lower(otype);
@@ -51,3 +52,4 @@ end
 %typemap.float  = 'single';
 %typemap.double = 'double';
 %typemap.char   = 'char';
+%typemap.string   = 'string';

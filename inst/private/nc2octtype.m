@@ -37,6 +37,8 @@ elseif nctype == netcdf_getConstant("NC_UINT")
   otype = "uint32";
 elseif nctype == netcdf_getConstant("NC_UINT64")
   otype = "uint64";
+elseif nctype == netcdf_getConstant("NC_STRING")
+  otype = "string";
 else
   error("netcdf:unknownDataType","unknown data type %d",nctype)
 endif
