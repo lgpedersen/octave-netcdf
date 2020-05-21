@@ -1,4 +1,4 @@
-%% Copyright (C) 2013 Alexander Barth
+%% Copyright (C) 2013-2020 Alexander Barth
 %%
 %% This program is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
@@ -38,5 +38,5 @@ elseif nctype == netcdf_getConstant("NC_UINT")
 elseif nctype == netcdf_getConstant("NC_UINT64")
   otype = "uint64";
 else
-  error("netcdf:unknownDataType","unknown data type %d",xtype)
+  error("netcdf:unknownDataType","unknown data type %d",nctype)
 endif
