@@ -47,8 +47,6 @@ dnl Check for mkoctfile and octave
 AC_CHECK_PROG(MKOCTFILE,mkoctfile,mkoctfile)
 test -z "$MKOCTFILE" &&	AC_MSG_WARN([no mkoctfile found on path])
 
-AC_CHECK_PROG(OCTAVE,octave,octave)
-
 dnl **********************************************************
 dnl checking for nc-config
 
@@ -112,7 +110,6 @@ AC_OUTPUT(Makefile)
 
 AC_MSG_RESULT([
 octave-forge is configured with
-   octave:        $OCTAVE
    mkoctfile:	  $MKOCTFILE
    nc-config:     $NC_CONFIG
    netCDF compiler flags: $NETCDF_CPPFLAGS

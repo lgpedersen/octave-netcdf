@@ -4,7 +4,6 @@ SHELL = @SHELL@
 AWK = @AWK@
 AWK ?= awk
 
-OCTAVE = @OCTAVE@
 MKOCTFILE = @MKOCTFILE@ -v
 NC_CONFIG = @NC_CONFIG@
 
@@ -40,9 +39,3 @@ __netcdf__.oct: $(SRC) netcdf_constants.h
 
 ../PKG_ADD: $(SRC)
 	$(shell sh ./PKG_ADD.sh)
-
-check: ../PKG_ADD __netcdf__.oct
-	($(OCTAVE) -f --eval "pkg unload octcdf; addpath $$PWD; addpath $$PWD/../inst; test_netcdf")
-
-check2: ../PKG_ADD __netcdf__.oct
-	($(OCTAVE) -f --eval "addpath $$PWD; addpath $$PWD/../inst; test_netcdf")
