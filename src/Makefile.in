@@ -31,7 +31,12 @@ netcdf_constants.h:
 clean:
 	rm -f __netcdf__.o __netcdf__.oct netcdf_constants.h
 
-real-clean: clean
+distclean: clean
+	-rm -f oct-alt-includes.h
+	-rm -f config.status config.log config.h
+	-rm -f Makefile
+
+realclean: distclean
 	rm -f ../PKG_ADD ../inst/import_netcdf.m ../PKG_DEL
 
 __netcdf__.oct: $(SRC) netcdf_constants.h
