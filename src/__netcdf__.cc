@@ -1360,13 +1360,20 @@ netcdf_getConstant(\"global\").\n\
 
   check_err(nc_inq_att(ncid, varid, attname.c_str(), &xtype, &len));
 
+  // https://docs.unidata.ucar.edu/netcdf-c/current/group__attributes.html#ga9757db7370e0e2e8c23ed1139a6ce6eb
+  // Pointer to location for returned number of values currently stored in the attribute. For attributes of type NC_CHAR, you should not assume that this includes a trailing zero byte; it doesn't if the attribute was stored without a trailing zero byte, for example from a FORTRAN program. Before using the value as a C string, make sure it is null-terminated. Ignored if NULL.
+
 #define OV_NETCDF_GET_ATT_CASE(netcdf_type,c_type)	                        \
   if (xtype == netcdf_type)						        \
       {                                                                         \
         Array< c_type > arr = Array< c_type >(dim_vector(1,len));               \
         check_err(nc_get_att(ncid, varid, attname.c_str(), arr.fortran_vec())); \
         data = octave_value(arr);                                               \
+        if (xtype == NC_CHAR) {                                         \
+          data = data.resize(dim_vector(1, len-1));                     \
+        }                                                               \
       }
+
       OV_NETCDF_GET_ATT_CASE(NC_BYTE,octave_int8)
       OV_NETCDF_GET_ATT_CASE(NC_UBYTE,octave_uint8)
       OV_NETCDF_GET_ATT_CASE(NC_SHORT,octave_int16)
